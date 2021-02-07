@@ -8,3 +8,4 @@ A quick project I made to try and create more exposure to ASP.NET MVC 5. The pro
 * Javascript
   * jQuery
   * Ajax
+* SQL/T-SQL
