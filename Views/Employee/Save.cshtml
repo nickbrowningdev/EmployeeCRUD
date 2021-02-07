@@ -1,0 +1,49 @@
+﻿@model  EmployeeCRUD.Models.EmployeeAccount
+
+
+@{
+    Layout = null;
+}
+
+<h2>Save</h2>
+@using (Html.BeginForm("Save", "Employee", FormMethod.Post, new { id = "popupForm" }))
+{
+    if (Model != null && Model.employeeID > 0)
+    {
+        @Html.HiddenFor(a => a.employeeID)
+    }
+
+    <div class="form-group">
+        <label>First Name</label>
+        @Html.TextBoxFor(a => a.employeeFirstName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.employeeFirstName)
+    </div>
+
+    <div class="form-group">
+        <label>Last Name</label>
+        @Html.TextBoxFor(a => a.employeeLastName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.employeeLastName)
+    </div>
+
+    <div class="form-group">
+        <label>Position</label>
+        @Html.TextBoxFor(a => a.employeePosition, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.employeePosition)
+    </div>
+
+    <div class="form-group">
+        <label>Office</label>
+        @Html.TextBoxFor(a => a.employeeOffice, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.employeeOffice)
+    </div>
+
+    <div class="form-group">
+        <label>Salary</label>
+        @Html.TextBoxFor(a => a.employeeSalary, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.employeeSalary)
+    </div>
+
+    <div>
+        <input type="submit" value="Save" />
+    </div>
+}

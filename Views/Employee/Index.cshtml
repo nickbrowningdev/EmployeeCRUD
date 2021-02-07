@@ -1,0 +1,129 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Employee CRUD</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container body-content">
+        <h2>Employee CRUD</h2>
+        
+        <div class="table-container">
+            <a class="popup btn btn-primary" style="margin-bottom: 20px;" href="/Employee/Save/0">Add New Employee</a>
+            <table id="employee-data-table" class="display">
+                <thead>
+                    <tr>
+                        <th>employeeFirstName</th>
+                        <th>employeeLastName</th>
+                        <th>employeePosition</th>
+                        <th>employeeOffice</th>
+                        <th>employeeSalary</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        
+
+        <hr />
+
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Nicholas Browning</p>
+        </footer>
+    </div>
+
+    <script src="~/Scripts/jquery-3.0.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var employeeTable = $("#employee-data-table").DataTable({
+                "ajax": {
+                    "url": "/Employee/GetEmployeeData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "employeeFirstName", "autoWidth": true },
+                    { "data": "employeeLastName", "autoWidth": true },
+                    { "data": "employeePosition", "autoWidth": true },
+                    { "data": "employeeOffice", "autoWidth": true },
+                    { "data": "employeeSalary", "autoWidth": true },
+                    {
+                        "data": "employeeID", "width": "50px", "render": function (data) {
+                            return '<a class="popup" href="/Employee/Save/' + data + '">Edit</a>';
+                        }
+                    },
+                    {
+                        "data": "employeeID", "width": "50px", "render": function (data) {
+                            return '<a class="popup" href="/Employee/Delete/' + data + '">Delete</a>';
+                        }
+                    }
+                ]
+            });
+
+            $('.table-container').on('click', 'a.popup', function () {
+                e.preventDefault();
+                OpenPopup($(this).attr('href'));
+            })
+
+            function OpenPopup(pageUrl) {
+                var $pageContent = $('<div/>');
+                $pageContent.load(pageUrl, function () {
+                    $('#popupForm', $pageContent).removeData('validator');
+                    $('#popupForm', $pageContent).removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse('form');
+                });
+
+                $dialog = $('<div class="popupWindow" style="overflow:auto"></div>')
+                    .html($pageContent)
+                    .dialog({
+                        draggable: false,
+                        autoOpen: false,
+                        resizable: false,
+                        model: true,
+                        title: 'Employee Popup',
+                        height: 550,
+                        width: 600,
+                        close: function () {
+                            $dialog.dialog('destroy').remove();
+                        }
+                    })
+
+                $('.popupWindow').on('submit', '#popupForm', function (e) {
+                    var url = $('#popupForm')[0].action;
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#popupForm').serialize(),
+                        success: function (data) {
+                            if (data.status) {
+                                $dialog.dialog('close');
+                                employeeTable.ajax.reload();
+                            }
+                        }
+                    })
+
+                    e.preventDefault();
+                })
+
+                $dialog.dialog('open');
+            }
+        });
+    </script>
+</body>
+</html>
